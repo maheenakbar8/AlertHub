@@ -8,10 +8,27 @@ def get_all_alerts(db: Session):
     return db.query(AlertDB).all()
 
 
-def create_alert(db: Session, alert: AlertCreate):
+def create_alert(db: Session, alert: AlertCreate | dict):
+    title = alert["title"] if isinstance(alert, dict) else alert.title
+    severity = alert["severity"] if isinstance(alert, dict) else alert.severity
+    alert_type = alert["alert_type"] if isinstance(alert, dict) else alert.alert_type
+
+    existing_alert = (
+        db.query(AlertDB)
+        .filter(
+            AlertDB.alert_type == alert_type,
+            AlertDB.severity == severity
+        )
+        .first()
+    )
+
+    if existing_alert:
+        return existing_alert
+
     new_alert = AlertDB(
-        title=alert.title,
-        severity=alert.severity
+        title=title,
+        severity=severity,
+        alert_type=alert_type
     )
 
     db.add(new_alert)
