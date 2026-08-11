@@ -3,9 +3,30 @@ from sqlalchemy.orm import Session
 from models import Alert as AlertDB
 from schemas import AlertCreate
 
+def get_all_alerts(
+    db: Session,
+    active: bool | None = None,
+    severity: str | None = None,
+    alert_type: str | None = None
+):
+    query = db.query(AlertDB)
 
-def get_all_alerts(db: Session):
-    return db.query(AlertDB).all()
+    if active is not None:
+        query = query.filter(
+            AlertDB.is_active == active
+        )
+
+    if severity is not None:
+        query = query.filter(
+            AlertDB.severity == severity
+        )
+
+    if alert_type is not None:
+        query = query.filter(
+            AlertDB.alert_type == alert_type
+        )
+
+    return query.all()
 
 
 def create_alert(db: Session, alert: AlertCreate | dict):

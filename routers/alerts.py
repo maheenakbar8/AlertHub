@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from database import SessionLocal
@@ -22,8 +22,18 @@ def get_db():
 
 
 @router.get("/", response_model=list[AlertResponse])
-def get_alerts(db: Session = Depends(get_db)):
-    return alert_service.get_all_alerts(db)
+def get_alerts(
+    active: bool | None = Query(default=None),
+    severity: str | None = Query(default=None),
+    alert_type: str | None = Query(default=None),
+    db: Session = Depends(get_db)
+):
+    return alert_service.get_all_alerts(
+        db,
+        active=active,
+        severity=severity,
+        alert_type=alert_type
+    )
 
 
 @router.post("/", response_model=AlertResponse)
