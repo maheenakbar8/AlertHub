@@ -14,7 +14,7 @@ async def check_weather(db: Session):
 
     alerts = []
 
-    if temperature >= 40:
+    if temperature >= 30:
         alerts.append({
         "title": f"Extreme heat detected: {temperature}°C",
         "severity": "high",
