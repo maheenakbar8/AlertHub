@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Boolean, Column, Integer, String
 
 from database import Base
 
@@ -10,3 +10,4 @@ class Alert(Base):
     title = Column(String, nullable=False)
     severity = Column(String, nullable=False)
     alert_type = Column(String, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)

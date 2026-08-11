@@ -71,3 +71,18 @@ def delete_alert(
     alert_service.delete_alert(db, alert)
 
     return {"message": "Alert deleted"}
+
+@router.patch("/{alert_id}/resolve", response_model=AlertResponse)
+def resolve_alert(
+    alert_id: int,
+    db: Session = Depends(get_db)
+):
+    alert = alert_service.get_alert_by_id(db, alert_id)
+
+    if alert is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Alert not found"
+        )
+
+    return alert_service.resolve_alert(db, alert)

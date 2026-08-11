@@ -17,7 +17,8 @@ def create_alert(db: Session, alert: AlertCreate | dict):
         db.query(AlertDB)
         .filter(
             AlertDB.alert_type == alert_type,
-            AlertDB.severity == severity
+            AlertDB.severity == severity,
+            AlertDB.is_active == True
         )
         .first()
     )
@@ -28,7 +29,8 @@ def create_alert(db: Session, alert: AlertCreate | dict):
     new_alert = AlertDB(
         title=title,
         severity=severity,
-        alert_type=alert_type
+        alert_type=alert_type,
+        is_active=True
     )
 
     db.add(new_alert)
@@ -63,3 +65,11 @@ def update_alert(
 def delete_alert(db: Session, alert: AlertDB):
     db.delete(alert)
     db.commit()
+
+def resolve_alert(db: Session, alert: AlertDB):
+    alert.is_active = False
+
+    db.commit()
+    db.refresh(alert)
+
+    return alert
