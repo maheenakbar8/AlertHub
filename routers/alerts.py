@@ -26,8 +26,18 @@ def get_alerts(
     active: bool | None = Query(default=None),
     severity: str | None = Query(default=None),
     alert_type: str | None = Query(default=None),
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
+    return alert_service.get_all_alerts(
+        db,
+        active=active,
+        severity=severity,
+        alert_type=alert_type,
+        page=page,
+        limit=limit
+    )
     return alert_service.get_all_alerts(
         db,
         active=active,

@@ -7,7 +7,9 @@ def get_all_alerts(
     db: Session,
     active: bool | None = None,
     severity: str | None = None,
-    alert_type: str | None = None
+    alert_type: str | None = None,
+    page: int = 1,
+    limit: int = 10
 ):
     query = db.query(AlertDB)
 
@@ -26,7 +28,9 @@ def get_all_alerts(
             AlertDB.alert_type == alert_type
         )
 
-    return query.all()
+    offset = (page - 1) * limit
+
+    return query.offset(offset).limit(limit).all()
 
 
 def create_alert(db: Session, alert: AlertCreate | dict):
