@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import SessionLocal
-from models import Alert as AlertDB
 from schemas import AlertCreate, AlertResponse
+from services import alert_service
 
 
 router = APIRouter(
@@ -23,7 +23,7 @@ def get_db():
 
 @router.get("/", response_model=list[AlertResponse])
 def get_alerts(db: Session = Depends(get_db)):
-    return db.query(AlertDB).all()
+    return alert_service.get_all_alerts(db)
 
 
 @router.post("/", response_model=AlertResponse)
@@ -31,16 +31,7 @@ def create_alert(
     alert: AlertCreate,
     db: Session = Depends(get_db)
 ):
-    new_alert = AlertDB(
-        title=alert.title,
-        severity=alert.severity
-    )
-
-    db.add(new_alert)
-    db.commit()
-    db.refresh(new_alert)
-
-    return new_alert
+    return alert_service.create_alert(db, alert)
 
 
 @router.patch("/{alert_id}", response_model=AlertResponse)
@@ -49,7 +40,7 @@ def update_alert(
     updated_alert: AlertCreate,
     db: Session = Depends(get_db)
 ):
-    alert = db.query(AlertDB).filter(AlertDB.id == alert_id).first()
+    alert = alert_service.get_alert_by_id(db, alert_id)
 
     if alert is None:
         raise HTTPException(
@@ -57,13 +48,11 @@ def update_alert(
             detail="Alert not found"
         )
 
-    alert.title = updated_alert.title
-    alert.severity = updated_alert.severity
-
-    db.commit()
-    db.refresh(alert)
-
-    return alert
+    return alert_service.update_alert(
+        db,
+        alert,
+        updated_alert
+    )
 
 
 @router.delete("/{alert_id}")
@@ -71,7 +60,7 @@ def delete_alert(
     alert_id: int,
     db: Session = Depends(get_db)
 ):
-    alert = db.query(AlertDB).filter(AlertDB.id == alert_id).first()
+    alert = alert_service.get_alert_by_id(db, alert_id)
 
     if alert is None:
         raise HTTPException(
@@ -79,7 +68,6 @@ def delete_alert(
             detail="Alert not found"
         )
 
-    db.delete(alert)
-    db.commit()
+    alert_service.delete_alert(db, alert)
 
     return {"message": "Alert deleted"}
