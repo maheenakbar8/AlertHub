@@ -10,6 +10,10 @@ from contextlib import asynccontextmanager
 
 from scheduler import start_scheduler
 
+import logging
+
+import logging_config
+
 
 Base.metadata.create_all(bind=engine)
 

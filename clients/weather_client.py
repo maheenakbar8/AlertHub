@@ -10,7 +10,7 @@ async def get_weather():
         "current": "temperature_2m,wind_speed_10m",
     }
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=10.0) as client:
         response = await client.get(url, params=params)
 
     response.raise_for_status()
