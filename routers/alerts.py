@@ -38,13 +38,7 @@ def get_alerts(
         page=page,
         limit=limit
     )
-    return alert_service.get_all_alerts(
-        db,
-        active=active,
-        severity=severity,
-        alert_type=alert_type
-    )
-
+   
 
 @router.post("/", response_model=AlertResponse)
 def create_alert(

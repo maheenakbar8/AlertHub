@@ -46,3 +46,17 @@ def update_user_preferences(
     db.refresh(user)
 
     return user
+
+def user_wants_alert(user, alert_type: str) -> bool:
+    if alert_type == "weather":
+        return user.wants_weather
+
+    if alert_type in {
+        "earthquake",
+        "flood",
+        "wildfire",
+        "cyberattack"
+    }:
+        return user.wants_news
+
+    return False
