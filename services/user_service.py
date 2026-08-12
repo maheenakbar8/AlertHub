@@ -32,3 +32,17 @@ def get_user_by_id(db: Session, user_id: int):
         .filter(User.id == user_id)
         .first()
     )
+
+
+def update_user_preferences(
+    db: Session,
+    user: User,
+    preferences
+):
+    user.wants_weather = preferences.wants_weather
+    user.wants_news = preferences.wants_news
+
+    db.commit()
+    db.refresh(user)
+
+    return user

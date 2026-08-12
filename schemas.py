@@ -33,5 +33,12 @@ class UserCreate(BaseModel):
 class UserResponse(BaseModel):
     id: int
     email: str
+    wants_weather: bool
+    wants_news: bool
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserPreferencesUpdate(BaseModel):
+    wants_weather: bool
+    wants_news: bool

@@ -2,11 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db
-from schemas import UserCreate, UserResponse
+from schemas import UserCreate, UserResponse, UserPreferencesUpdate
 from services.user_service import (
     create_user,
     get_all_users,
-    get_user_by_id
+    get_user_by_id,
+    update_user_preferences
 )
 
 router = APIRouter(
@@ -44,3 +45,24 @@ def read_user(
         )
 
     return user
+
+
+@router.put("/{user_id}/preferences", response_model=UserResponse)
+def update_preferences(
+    user_id: int,
+    preferences: UserPreferencesUpdate,
+    db: Session = Depends(get_db)
+):
+    user = get_user_by_id(db, user_id)
+
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+
+    return update_user_preferences(
+        db,
+        user,
+        preferences
+    )
