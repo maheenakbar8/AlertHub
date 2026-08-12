@@ -18,3 +18,13 @@ class Alert(Base):
     external_id = Column(String, nullable=True)
 
     detected_at = Column(DateTime, nullable=True)
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, nullable=False)
+
+    wants_weather = Column(Boolean, default=True, nullable=False)
+    wants_news = Column(Boolean, default=True, nullable=False)

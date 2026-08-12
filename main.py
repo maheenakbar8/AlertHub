@@ -5,6 +5,7 @@ from database import Base, engine
 
 from routers.alerts import router as alerts_router
 from routers.weather import router as weather_router
+from routers.users import router as users_router
 
 from contextlib import asynccontextmanager
 
@@ -31,6 +32,7 @@ app = FastAPI(
 
 app.include_router(alerts_router)
 app.include_router(weather_router)
+app.include_router(users_router)
 
 
 @app.get("/")

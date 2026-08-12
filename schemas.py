@@ -24,3 +24,14 @@ class AlertResponse(BaseModel):
     detected_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserCreate(BaseModel):
+    email: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    email: str
+
+    model_config = ConfigDict(from_attributes=True)
