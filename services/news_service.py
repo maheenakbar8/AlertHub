@@ -1,6 +1,8 @@
 import logging
 
 from clients.news_client import fetch_news
+from services.alert_service import create_alert
+from datetime import datetime, timezone
 
 NEWS_KEYWORDS = {
     "earthquake": [
@@ -28,8 +30,28 @@ NEWS_KEYWORDS = {
 
 logger = logging.getLogger(__name__)
 
-async def process_news():
+async def process_news(db):
     news_data = await fetch_news()
+
+    alerts = []
+
+    for article in news_data.get("articles", []):
+        event_type = detect_event(article)
+
+        if event_type:
+            alert_data = create_news_alert(
+                article,
+                event_type
+            )
+
+            saved_alert = create_alert(
+                db,
+                alert_data
+            )
+
+            alerts.append(saved_alert)
+
+    return alerts
 
 
 def detect_event(article):
@@ -50,5 +72,8 @@ def create_news_alert(article, event_type):
         "title": article["title"],
         "severity": "high",
         "alert_type": event_type,
-        "source_url": article["url"]
+        "source": article.get("source", {}).get("name"),
+        "source_url": article.get("url"),
+        "external_id": article.get("url"),
+        "detected_at": datetime.now(timezone.utc),
     }

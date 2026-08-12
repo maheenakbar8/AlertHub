@@ -34,28 +34,43 @@ def get_all_alerts(
 
 
 def create_alert(db: Session, alert: AlertCreate | dict):
-    title = alert["title"] if isinstance(alert, dict) else alert.title
-    severity = alert["severity"] if isinstance(alert, dict) else alert.severity
-    alert_type = alert["alert_type"] if isinstance(alert, dict) else alert.alert_type
+    if isinstance(alert, dict):
+        title = alert["title"]
+        severity = alert["severity"]
+        alert_type = alert["alert_type"]
+        source = alert.get("source")
+        source_url = alert.get("source_url")
+        external_id = alert.get("external_id")
+        detected_at = alert.get("detected_at")
+    else:
+        title = alert.title
+        severity = alert.severity
+        alert_type = alert.alert_type
+        source = alert.source
+        source_url = alert.source_url
+        external_id = alert.external_id
+        detected_at = alert.detected_at
 
-    existing_alert = (
-        db.query(AlertDB)
-        .filter(
-            AlertDB.alert_type == alert_type,
-            AlertDB.severity == severity,
-            AlertDB.is_active == True
+    # Check whether this exact external item already exists
+    if external_id:
+        existing_alert = (
+            db.query(AlertDB)
+            .filter(AlertDB.external_id == external_id)
+            .first()
         )
-        .first()
-    )
 
-    if existing_alert:
-        return existing_alert
+        if existing_alert:
+            return existing_alert
 
     new_alert = AlertDB(
         title=title,
         severity=severity,
         alert_type=alert_type,
-        is_active=True
+        is_active=True,
+        source=source,
+        source_url=source_url,
+        external_id=external_id,
+        detected_at=detected_at
     )
 
     db.add(new_alert)
