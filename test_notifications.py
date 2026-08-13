@@ -1,27 +1,34 @@
+import asyncio
+
 from database import SessionLocal
-from models import User, Alert
+from models import Alert
 from services.notification_service import notify_users
 
 
-db = SessionLocal()
+async def main():
+    db = SessionLocal()
 
-try:
-    user = db.query(User).first()
-    alert = db.query(Alert).first()
-
-    if not user:
-        print("No users found.")
-    elif not alert:
-        print("No alerts found.")
-    else:
-        print(
-            f"Testing notification for {user.email} "
-            f"with alert: {alert.title}"
+    try:
+        alert = (
+            db.query(Alert)
+            .filter(Alert.is_active == True)
+            .first()
         )
 
-        count = notify_users(db, alert)
+        if alert is None:
+            print("No active alerts found.")
+            return
 
-        print(f"Users notified: {count}")
+        print(
+            f"Testing notification for {alert.title}"
+        )
 
-finally:
-    db.close()
+        notified = await notify_users(db, alert)
+
+        print(f"Users notified: {notified}")
+
+    finally:
+        db.close()
+
+
+asyncio.run(main())
