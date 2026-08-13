@@ -42,3 +42,14 @@ class UserResponse(BaseModel):
 class UserPreferencesUpdate(BaseModel):
     wants_weather: bool
     wants_news: bool
+
+
+
+class NotificationResponse(BaseModel):
+    id: int
+    user_id: int
+    alert_id: int
+    sent_at: datetime
+    status: str
+
+    model_config = ConfigDict(from_attributes=True)
