@@ -44,7 +44,7 @@ async def process_news(db):
                 event_type
             )
 
-            saved_alert = create_alert(
+            saved_alert = await create_alert(
                 db,
                 alert_data
             )

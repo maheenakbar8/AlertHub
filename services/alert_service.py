@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 
 from models import Alert as AlertDB
 from schemas import AlertCreate
+from services.notification_service import notify_users
 
 def get_all_alerts(
     db: Session,
@@ -33,7 +34,7 @@ def get_all_alerts(
     return query.offset(offset).limit(limit).all()
 
 
-def create_alert(db: Session, alert: AlertCreate | dict):
+async def create_alert(db: Session, alert: AlertCreate | dict):
     if isinstance(alert, dict):
         title = alert["title"]
         severity = alert["severity"]
@@ -76,6 +77,8 @@ def create_alert(db: Session, alert: AlertCreate | dict):
     db.add(new_alert)
     db.commit()
     db.refresh(new_alert)
+
+    await notify_users(db, new_alert)
 
     return new_alert
 

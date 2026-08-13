@@ -41,11 +41,11 @@ def get_alerts(
    
 
 @router.post("/", response_model=AlertResponse)
-def create_alert(
+async def create_alert(
     alert: AlertCreate,
     db: Session = Depends(get_db)
 ):
-    return alert_service.create_alert(db, alert)
+    return await alert_service.create_alert(db, alert)
 
 
 @router.patch("/{alert_id}", response_model=AlertResponse)
