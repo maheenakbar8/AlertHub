@@ -28,3 +28,15 @@ class User(Base):
 
     wants_weather = Column(Boolean, default=True, nullable=False)
     wants_news = Column(Boolean, default=True, nullable=False)
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    user_id = Column(Integer, nullable=False)
+    alert_id = Column(Integer, nullable=False)
+
+    sent_at = Column(DateTime, nullable=False)
+    status = Column(String, nullable=False, default="sent")
