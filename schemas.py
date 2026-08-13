@@ -44,6 +44,15 @@ class UserPreferencesUpdate(BaseModel):
     wants_news: bool
 
 
+class NotificationAlertResponse(BaseModel):
+    title: str
+    severity: str
+    alert_type: str
+    source: str | None = None
+    source_url: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)
+
 
 class NotificationResponse(BaseModel):
     id: int
@@ -51,5 +60,6 @@ class NotificationResponse(BaseModel):
     alert_id: int
     sent_at: datetime
     status: str
+    alert: NotificationAlertResponse
 
     model_config = ConfigDict(from_attributes=True)
