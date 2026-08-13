@@ -20,13 +20,15 @@ def get_db():
         db.close()
 
 
-@router.get("/", response_model=list[NotificationResponse])
+@router.get("/{user_id}", response_model=list[NotificationResponse])
 def get_notifications(
+    user_id: int,
     db: Session = Depends(get_db)
 ):
     results = (
         db.query(Notification, Alert)
         .join(Alert, Notification.alert_id == Alert.id)
+        .filter(Notification.user_id == user_id)
         .order_by(Notification.sent_at.desc())
         .all()
     )
