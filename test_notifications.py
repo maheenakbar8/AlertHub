@@ -1,7 +1,4 @@
 import asyncio
-from dotenv import load_dotenv
-
-load_dotenv()
 
 from database import SessionLocal
 from models import Alert
@@ -14,17 +11,16 @@ async def main():
     try:
         alert = (
             db.query(Alert)
-            .filter(Alert.is_active == True)
+            .filter(Alert.external_id.like("test-%"))
+            .order_by(Alert.id.desc())
             .first()
         )
 
         if alert is None:
-            print("No active alerts found.")
+            print("No test alert found.")
             return
 
-        print(
-            f"Testing notification for {alert.title}"
-        )
+        print(f"Testing notification for: {alert.title}")
 
         notified = await notify_users(db, alert)
 

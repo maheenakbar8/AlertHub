@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, UniqueConstraint
 
 from database import Base
 
@@ -40,3 +40,11 @@ class Notification(Base):
 
     sent_at = Column(DateTime, nullable=False)
     status = Column(String, nullable=False, default="sent")
+
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id",
+            "alert_id",
+            name="uq_user_alert_notification"
+        ),
+    )
