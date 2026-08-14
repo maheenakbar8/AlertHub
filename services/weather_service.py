@@ -18,20 +18,18 @@ async def check_weather(db: Session):
     wind_speed = current["wind_speed_10m"]
 
     logger.info(
-    f"Weather data: {temperature}°C, wind {wind_speed} km/h"
-)
-
-    alerts = []
+        f"Weather data: {temperature}°C, wind {wind_speed} km/h"
+    )
 
     alerts = detect_weather_alerts(
-    temperature,
-    wind_speed
-)
+        temperature,
+        wind_speed
+    )
 
     created_alerts = []
 
     for alert in alerts:
-        created = alert_service.create_alert(
+        created = await alert_service.create_alert(
             db,
             alert
         )
