@@ -22,6 +22,23 @@ async def notify_user(db, user: User, alert: Alert):
     if not user_wants_alert(user, alert.alert_type):
         return False
 
+    existing_notification = (
+        db.query(Notification)
+        .filter(
+            Notification.user_id == user.id,
+            Notification.alert_id == alert.id
+        )
+        .first()
+    )
+
+    if existing_notification:
+        logger.info(
+            "NOTIFICATION ALREADY EXISTS | user=%s | alert=%s",
+            user.email,
+            alert.title
+        )
+        return False
+
     if not EMAIL_ENABLED:
         notification = Notification(
             user_id=user.id,

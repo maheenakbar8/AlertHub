@@ -55,15 +55,56 @@ async def process_news(db):
 
 
 def detect_event(article):
-    title = article.get("title", "")
-    description = article.get("description", "")
+    title = article.get("title", "").lower()
+    description = article.get("description", "").lower()
 
-    text = f"{title} {description}".lower()
+    # Strong keywords that should count even if they appear in the description
+    strong_keywords = {
+        "earthquake": [
+            "earthquake",
+            "earthquake hits",
+            "earthquake strikes",
+            "earthquake struck",
+            "earthquake magnitude"
+        ],
+        "flood": [
+            "flood",
+            "flooding",
+            "flash flood",
+            "floods"
+        ],
+        "wildfire": [
+            "wildfire",
+            "wildfires",
+            "forest fire",
+            "bushfire"
+        ],
+        "cyberattack": [
+            "cyberattack",
+            "cyber attack",
+            "ransomware attack",
+            "ransomware"
+        ]
+    }
 
-    for event_type, keywords in NEWS_KEYWORDS.items():
+    # 1. Give the title priority.
+    # A strong keyword in the title is enough to classify the article.
+    for event_type, keywords in strong_keywords.items():
         for keyword in keywords:
-            if keyword in text:
+            if keyword in title:
                 return event_type
+
+    # 2. If the title doesn't identify an event,
+    # require at least TWO relevant keywords in the description.
+    for event_type, keywords in strong_keywords.items():
+        matches = 0
+
+        for keyword in keywords:
+            if keyword in description:
+                matches += 1
+
+        if matches >= 2:
+            return event_type
 
     return None
 
